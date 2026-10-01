@@ -132,13 +132,39 @@ python -m pip install -r requirements.txt
 
 ## Run
 
-프로젝트 최상위 경로에서 실행합니다.
+프로젝트 최상위 경로에서 QC를 실행합니다.
+
+기본 예제 데이터셋을 검사하려면:
 
 ```bash
 python -m app.services.qc_service
 ```
 
-기본 실행 시 `sample_data`를 검사하고 `reports` 폴더에 결과를 생성합니다.
+검사할 데이터셋 경로를 직접 지정할 수 있습니다.
+
+```bash
+python -m app.services.qc_service --dataset "path/to/dataset"
+```
+
+결과 저장 위치도 지정할 수 있습니다.
+
+```bash
+python -m app.services.qc_service --dataset "path/to/dataset" --output "path/to/reports"
+```
+
+Windows에서 경로에 공백이 포함된 경우 경로를 따옴표로 감싸서 입력합니다.
+
+```bash
+python -m app.services.qc_service --dataset "C:\Users\user\Desktop\My Dataset"
+```
+
+사용 가능한 옵션은 다음 명령어로 확인할 수 있습니다.
+
+```bash
+python -m app.services.qc_service --help
+```
+
+기본 출력 위치는 `reports`이며 다음 파일이 생성됩니다.
 
 ```text
 reports/

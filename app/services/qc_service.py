@@ -1,8 +1,9 @@
+import argparse
 from pathlib import Path
 
-from app.core.scanner import scan_dataset
 from app.core.image_validator import validate_image
 from app.core.json_validator import validate_json
+from app.core.scanner import scan_dataset
 from app.services.report_service import save_error_report, save_summary
 
 
@@ -14,6 +15,21 @@ def run_qc(dataset_path):
 
     image_dir = dataset_path / "images"
     annotation_dir = dataset_path / "annotations"
+
+    if not dataset_path.exists():
+        raise FileNotFoundError(
+            f"Dataset path not found: {dataset_path}"
+        )
+
+    if not image_dir.exists():
+        raise FileNotFoundError(
+            f"Image directory not found: {image_dir}"
+        )
+
+    if not annotation_dir.exists():
+        raise FileNotFoundError(
+            f"Annotation directory not found: {annotation_dir}"
+        )
 
     scan_result = scan_dataset(dataset_path)
 
@@ -70,15 +86,12 @@ def run_qc(dataset_path):
     }
 
 
-if __name__ == "__main__":
-    result = run_qc("sample_data")
-
-    summary_path = save_summary(result, "reports")
-    error_report_path = save_error_report(result, "reports")
-
+def print_summary(result):
     summary = result["summary"]
 
+    print()
     print("=== Dataset QC Summary ===")
+    print(f"Dataset: {result['dataset']}")
     print(f"Images: {summary['image_count']}")
     print(f"Annotations: {summary['annotation_count']}")
     print(f"Matched: {summary['matched_count']}")
@@ -103,5 +116,52 @@ if __name__ == "__main__":
         f"{summary['total_error_count']}"
     )
 
-    print(f"Summary saved: {summary_path}")
-    print(f"Error report saved: {error_report_path}")
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Run QC validation on an AI image dataset."
+    )
+
+    parser.add_argument(
+        "--dataset",
+        default="sample_data",
+        help="Dataset directory containing images and annotations.",
+    )
+
+    parser.add_argument(
+        "--output",
+        default="reports",
+        help="Directory where QC reports will be saved.",
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    try:
+        result = run_qc(args.dataset)
+
+        summary_path = save_summary(
+            result,
+            args.output,
+        )
+
+        error_report_path = save_error_report(
+            result,
+            args.output,
+        )
+
+        print_summary(result)
+
+        print()
+        print(f"Summary saved: {summary_path}")
+        print(f"Error report saved: {error_report_path}")
+
+    except FileNotFoundError as error:
+        print(f"ERROR: {error}")
+
+
+if __name__ == "__main__":
+    main()
