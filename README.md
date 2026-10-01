@@ -171,6 +171,63 @@ reports/
 ├── qc_errors.csv
 └── qc_summary.json
 ```
+## API
+
+FastAPI 서버를 실행합니다.
+
+```bash
+python -m uvicorn app.api.main:app --reload
+```
+
+서버 실행 후 Swagger UI에서 API를 직접 테스트할 수 있습니다.
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### Health Check
+
+```text
+GET /health
+```
+
+### Run Dataset QC
+
+```text
+POST /qc
+```
+
+Request:
+
+```json
+{
+    "dataset_path": "sample_data"
+}
+```
+
+Response:
+
+```json
+{
+    "status": "completed",
+    "result": {
+        "dataset": "sample_data",
+        "summary": {
+            "image_count": 5,
+            "annotation_count": 5,
+            "matched_count": 4,
+            "missing_annotation_count": 1,
+            "missing_image_count": 1,
+            "image_error_count": 2,
+            "annotation_error_count": 3,
+            "total_error_count": 7
+        }
+    }
+}
+```
+
+결과 수치는 입력 데이터셋의 QC 결과에 따라 달라집니다.
+
 
 ## Test
 
@@ -185,6 +242,8 @@ python -m pytest
 ## Tech Stack
 
 - Python
+- FastAPI
+- Uvicorn
 - Pillow
 - pytest
 

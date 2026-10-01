@@ -1,2 +1,5 @@
 Pillow
 pytest
+fastapi
+uvicorn
+httpx
